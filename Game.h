@@ -6,6 +6,7 @@ class Game{
     private:
         Player player1, player2;
         Board board;
+        Board board_copy;
         Player* currentPlayer;
     public:
 

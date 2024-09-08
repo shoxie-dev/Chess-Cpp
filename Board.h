@@ -14,13 +14,12 @@ class Board{
         void printBoard();
         void movePiece(int x_i, int y_i, int x_f, int y_f);
         void pawnPromotion(char colour);
-        bool isCheck(char colour, int& k_x, int& k_y);
+        bool isCheck(char colour,int& attack_x, int& attack_y, int& k_x, int& k_y);
         bool isCheckmate(char colour);
         bool isStalemate(char colour, int k_x, int k_y);
         bool isKingSafeB(int x_i, int y_i, int x_f, int y_f);
         void castleRook(int x_i, int y_i, int x_f, int y_f);
         void takeEnPassant(int x_i, int y_i, int x_f, int y_f);
-
 
         std::pair <int,int> inputCoords() const{
             std::pair <int, int> XY;

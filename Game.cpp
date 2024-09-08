@@ -34,6 +34,8 @@ void Game::switchTurn(){
 void Game::start(){
     bool king_checkmate = false;
     bool king_check = false;
+    int attack_x;
+    int attack_y;
     int king_x_check{};
     int king_y_check{};
     std::pair<int,int> pieceXY;
@@ -43,11 +45,11 @@ void Game::start(){
     bool stale_mate = false;
     bool not_nullptr = false;
     bool current_colour = false;
+    bool valid_move = false;
 
     while(king_checkmate != true && stale_mate != true){
         board.printBoard();
         if(currentPlayer){      
-            if(king_check == false){
                 while(valid_piece == false){
                     std::cout << "Choose piece " << currentPlayer->getName() << ":" << '\n';
                     pieceXY = board.inputCoords();
@@ -63,64 +65,63 @@ void Game::start(){
                         if(choice == 'y'){
                             valid_piece = false;
                         }else if(choice == 'n'){
+                            std::cout << "Make move: " << '\n';
+                            posXY = board.inputCoords();
+                            valid_move = board.getSquare(pieceXY.first,pieceXY.second)->isValidMove(pieceXY.first,pieceXY.second,posXY.first,posXY.second,board,currentPlayer->getColour());
+                            if(valid_move == true){
+                                board.movePiece(pieceXY.first,pieceXY.second, posXY.first, posXY.second);
+                                king_check = board.isCheck(currentPlayer->getColour(),attack_x,attack_y, king_x_check, king_y_check);
+                                if(king_check == false){
+                                    stale_mate = board.isStalemate(currentPlayer->getColour(),king_x_check,king_y_check);
+                                }
+                                if(stale_mate == true){
+                                    break;
+                                }
+                                king_checkmate = board.isCheckmate(currentPlayer->getColour());
+                                if(king_checkmate == true){
+                                    std::cout << "Player " << currentPlayer->getColour() << " wins" <<'\n';
+                                    break;
+                                }
+
+                                board.pawnPromotion(currentPlayer->getColour());
+                            }else{
+                                bool valid_move = false;
+                                while(valid_move == false){
+                                    std::cout << "Invalid move, select again.  " << '\n';
+                                    posXY = board.inputCoords();
+                                    valid_move = board.getSquare(pieceXY.first,pieceXY.second)->isValidMove(pieceXY.first,pieceXY.second,posXY.first,posXY.second,board,currentPlayer->getColour());
+                                }
+                                std::cout << "Valid move made." << '\n';
+                                board.movePiece(pieceXY.first,pieceXY.second, posXY.first, posXY.second);
+                                king_check = board.isCheck(currentPlayer->getColour(),attack_x,attack_y, king_x_check, king_y_check);
+                                if(king_check == false){
+                                    stale_mate = board.isStalemate(currentPlayer->getColour(),king_x_check,king_y_check);
+                                }
+                                if(stale_mate == true){
+                                    break;
+                                }
+                                king_checkmate = board.isCheckmate(currentPlayer->getColour());
+                                if(king_checkmate == true){
+                                    std::cout << "Player " << currentPlayer->getColour() << " wins" <<'\n';
+                                    break;
+                                }
+                                board.pawnPromotion(currentPlayer->getColour());
+                            }
+                            switchTurn();
+                            pieceXY.first = 0;
+                            pieceXY.second = 0;
+                            posXY.first = 0;
+                            posXY.second = 0;
+                            valid_piece = false;
                             break;
                         }
+
                     }else{
                         std::cout << "Invalid piece selected" << '\n';
                     } 
                 } 
-            }else{
-                std::cout << "King is selected : " << currentPlayer->getName() << '\n';
-                pieceXY.first =  king_x_check;
-                pieceXY.second = king_y_check;
-                std::cout << "( " <<  king_x_check << ", " << king_y_check << ")" <<'\n';
-            }
-            std::cout << "Make move: " << '\n';
-            posXY = board.inputCoords();
-            bool valid_move = board.getSquare(pieceXY.first,pieceXY.second)->isValidMove(pieceXY.first,pieceXY.second,posXY.first,posXY.second,board,currentPlayer->getColour());
-                if(valid_move == true){
-                    board.movePiece(pieceXY.first,pieceXY.second, posXY.first, posXY.second);
-                    king_check = board.isCheck(currentPlayer->getColour(), king_x_check, king_y_check);
-                    stale_mate = board.isStalemate(currentPlayer->getColour(),king_x_check,king_y_check);
-                    if(stale_mate == true){
-                        break;
-                    }
-                    king_checkmate = board.isCheckmate(currentPlayer->getColour());
-                    if(king_checkmate == true){
-                        std::cout << "Player " << currentPlayer->getColour() << " wins" <<'\n';
-                        break;
-                    }
-
-                    board.pawnPromotion(currentPlayer->getColour());
-                }else{
-                    bool valid_move = false;
-                    while(valid_move == false){
-                        std::cout << "Invalid move, select again.  " << '\n';
-                        posXY = board.inputCoords();
-                        valid_move = board.getSquare(pieceXY.first,pieceXY.second)->isValidMove(pieceXY.first,pieceXY.second,posXY.first,posXY.second,board,currentPlayer->getColour());
-                    }
-                    std::cout << "Valid move made." << '\n';
-                    board.movePiece(pieceXY.first,pieceXY.second, posXY.first, posXY.second);
-                    king_check = board.isCheck(currentPlayer->getColour(), king_x_check, king_y_check);
-                    stale_mate = board.isStalemate(currentPlayer->getColour(),king_x_check,king_y_check);
-                    if(stale_mate == true){
-                        break;
-                    }
-                    king_checkmate = board.isCheckmate(currentPlayer->getColour());
-                    if(king_checkmate == true){
-                        std::cout << "Player " << currentPlayer->getColour() << " wins" <<'\n';
-                        break;
-                    }
-                    board.pawnPromotion(currentPlayer->getColour());
-                }
+            
         }
-        switchTurn();
-        pieceXY.first = 0;
-        pieceXY.second = 0;
-        posXY.first = 0;
-        posXY.second = 0;
-        valid_piece = false;
-
 
     }
     board.printBoard();

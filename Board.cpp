@@ -16,8 +16,10 @@ Board::Board(){//x y (is default positions)
     // *** WHITE PIECES ***
 
     initPiece(7, 4, new King(white)); // 7 4
+    
+    initPiece(1, 0, new Queen(white));// 7 0
 
- 
+/* 
     initPiece(7, 3, new Queen(white));// 7 3
     initPiece(7, 0, new Rook(white));// 7 0
     initPiece(7, 7, new Rook(white));// 7 7
@@ -30,14 +32,15 @@ Board::Board(){//x y (is default positions)
     for(int j{}; j < dim; ++j){
         initPiece(6 , j, new Pawn(white)); // 6, 0 <= j < 8 default
     }
-
+*/
 
 
     // *** BLACK PIECES ***
 
     initPiece(0, 4, new King(black)); // 0 4
+    initPiece(1,3, new Queen(black));
 
-
+/*
     initPiece(0, 3, new Queen(black));// 0 3
     initPiece(0, 0, new Rook(black));// 0 0
     initPiece(0, 7, new Rook(black));// 0 7
@@ -50,7 +53,7 @@ Board::Board(){//x y (is default positions)
     for(int j{}; j < dim; ++j){
         initPiece(1 , j, new Pawn(black));//1, 0 <= j < 8 is default
     }
-
+*/
 }
 
 
@@ -218,7 +221,7 @@ void Board::pawnPromotion(char colour){
     }
 }
 
-bool Board::isCheck(char colour,int& k_x, int& k_y){//player colour and coordinates of  king piece
+bool Board::isCheck(char colour,int& attack_x, int& attack_y, int& k_x, int& k_y){//player colour and coordinates of  king piece
     bool king_check{false};
     
     if(colour == 'B'){// if colour b made a move check if White is in check after that move
@@ -245,6 +248,8 @@ bool Board::isCheck(char colour,int& k_x, int& k_y){//player colour and coordina
                     if(getColourB(k_x, k_y) != getColourB(i, j)){ 
                         attack_colour = getColourB(i, j);
                         if(getSquare(i, j)->isValidMove(i, j, k_x, k_y, *this, attack_colour)){
+                            attack_x = i;
+                            attack_y = j;
                             king_check = true;
                             std::cout << "White King is in check" << '\n';
                             break;
@@ -282,6 +287,8 @@ bool Board::isCheck(char colour,int& k_x, int& k_y){//player colour and coordina
                     if(getColourB(k_x, k_y) != getColourB(i, j)){ 
                         attack_colour = getColourB(i, j);
                         if(getSquare(i, j)->isValidMove(i, j, k_x, k_y, *this, attack_colour)){
+                            attack_x = i;
+                            attack_y = j;
                             king_check = true;
                             std::cout << "Black King is in check" << '\n';
                             break;
@@ -485,7 +492,6 @@ bool Board::isKingSafeB(int x_i, int y_i,int x_f, int y_f){
 
 bool Board::isStalemate(char colour, int k_x, int k_y){
     
-    bool king_check = isCheck(colour,k_x, k_y);
     bool stale_mate{false};
     bool b1{false};
     bool b2{false};
@@ -496,7 +502,6 @@ bool Board::isStalemate(char colour, int k_x, int k_y){
     bool b7{false};
     bool b8{false};
 
-    if(king_check == false){
         if(k_x - 1 >= 0){
             
             if((k_y - 1)>=0){
@@ -538,7 +543,7 @@ bool Board::isStalemate(char colour, int k_x, int k_y){
             std::cout << "Stalemate: draw " << '\n';
         }
 
-    }
+    
     return stale_mate;
 }
 
